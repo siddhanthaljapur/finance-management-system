@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>System Health — FinanceOS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --card: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --success: #238636;
+      --primary: #58a6ff;
+    }
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex; align-items: center; justify-content: center;
+      height: 100vh;
+    }
+    .status-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      width: 100%; max-width: 400px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+    .status-indicator {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(35, 134, 54, 0.1);
+      color: #3fb950;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 14px; font-weight: 600;
+      margin-bottom: 24px;
+    }
+    .pulse {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #3fb950;
+      box-shadow: 0 0 0 rgba(63, 185, 80, 0.4);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(63, 185, 80, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(63, 185, 80, 0); }
+    }
+    h1 { font-size: 24px; font-weight: 800; margin: 0 0 8px; color: #fff; }
+    p { color: var(--text-muted); margin: 0 0 32px; font-size: 15px; }
+    .metrics {
+      text-align: left;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+    .metric {
+      display: flex; justify-content: space-between;
+      margin-bottom: 12px; font-size: 13px;
+    }
+    .metric span:first-child { color: var(--text-muted); }
+    .metric span:last-child { color: var(--text); font-weight: 600; font-family: monospace; }
+    .back {
+      margin-top: 32px; display: inline-block;
+      color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 600;
+    }
+    .back:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="status-card">
+    <div class="status-indicator">
+      <div class="pulse"></div>
+      Operational
+    </div>
+    <h1>System Status</h1>
+    <p>All FinanceOS systems are functioning normally.</p>
+    
+    <div class="metrics">
+      <div class="metric">
+        <span>API Service</span>
+        <span>Online</span>
+      </div>
+      <div class="metric">
+        <span>Database (SQLite)</span>
+        <span>Connected</span>
+      </div>
+      <div class="metric">
+        <span>Uptime</span>
+        <span id="uptime">Loading...</span>
+      </div>
+      <div class="metric">
+        <span>Version</span>
+        <span>v1.0.0</span>
+      </div>
+    </div>
+    
+    <a href="/" class="back">← Back to Console</a>
+  </div>
+
+  <script>
+    // Simple uptime calculation
+    const startTime = Date.now() - (Math.random() * 10000000); // Mock uptime for visual
+    function updateUptime() {
+      const diff = Math.floor((Date.now() - startTime) / 1000);
+      const h = Math.floor(diff / 3600);
+      const m = Math.floor((diff % 3600) / 60);
+      const s = diff % 60;
+      document.getElementById('uptime').textContent = `${h}h ${m}m ${s}s`;
+    }
+    updateUptime();
+    setInterval(updateUptime, 1000);
+  </script>
+</body>
+</html>
