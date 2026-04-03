@@ -19,10 +19,23 @@ function signToken(payload) {
 
 /**
  * Middleware: verifies the Bearer token in the Authorization header.
+ * FALLBACK: If x-demo-role is present, it bypasses JWT for demo purposes.
  * Attaches the authenticated user to req.user.
  */
 const authenticate = asyncHandler(async (req, res, next) => {
+  const demoRole = req.headers['x-demo-role'];
   const authHeader = req.headers.authorization;
+
+  // ── Demo Mode Bypass ────────────────────────────────────────────────────────
+  if (demoRole) {
+    const user = db.prepare('SELECT id, name, email, role, status FROM users WHERE role = ? LIMIT 1').get(demoRole);
+    if (user) {
+      req.user = user;
+      return next();
+    }
+  }
+
+  // ── Standard JWT Verification ───────────────────────────────────────────────
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     throw createError.unauthorized('No token provided. Please log in.');
   }

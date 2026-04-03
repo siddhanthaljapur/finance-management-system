@@ -14,7 +14,18 @@ async function api(method, path, body) {
     method,
     headers: { 'Content-Type': 'application/json' },
   };
-  if (token) opts.headers['Authorization'] = `Bearer ${token}`;
+  
+  const token = localStorage.getItem('fin_token');
+  if (token) {
+    opts.headers['Authorization'] = `Bearer ${token}`;
+  } else {
+    // Demo Mode: Send the role in a custom header
+    const override = JSON.parse(localStorage.getItem('fin_role_override') || '{}');
+    if (override.role) {
+      opts.headers['x-demo-role'] = override.role;
+    }
+  }
+
   if (body) opts.body = JSON.stringify(body);
   const res = await fetch(API + path, opts);
   const data = await res.json();

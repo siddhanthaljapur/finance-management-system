@@ -594,51 +594,21 @@
     async function selectRole(role) {
       const card = document.getElementById('card-' + role);
       card.classList.add('selecting');
-
-      // Add ripple
       addRipple(card);
 
       const creds = roleCredentials[role];
 
-      // Clear any old token
-      localStorage.removeItem('fin_token');
-      localStorage.removeItem('fin_role_override');
-
-      // Store role hint for fallback
+      // Store role hint for the app to use
       localStorage.setItem('fin_role_override', JSON.stringify({
         name: creds.name,
         role: role,
         email: creds.email
       }));
 
-      // Short visual delay so user feels the selection
-      await new Promise(r => setTimeout(r, 520));
-
-      // Try to login via API
-      try {
-        console.log(`Attempting demo login for: ${creds.email}`);
-        const res = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: creds.email, password: creds.password })
-        });
-        const data = await res.json();
-        
-        console.log('Login Response:', data);
-        
-        if (res.ok && data.data?.token) {
-          localStorage.setItem('fin_token', data.data.token);
-          // Navigate to dashboard
-          window.location.href = 'dashboard.html';
-        } else {
-          showError(`Demo Login Failed: ${data.message || 'Server error'}. Check browser console.`);
-          card.classList.remove('selecting');
-        }
-      } catch (e) {
-        console.error('Network Error:', e);
-        showError("Unable to connect to the backend API.");
-        card.classList.remove('selecting');
-      }
+      // Short visual delay, then redirect immediately (no API login needed)
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 520);
     }
 
     function showError(msg) {
