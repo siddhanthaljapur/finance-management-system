@@ -135,7 +135,11 @@ async function main() {
   process.exit(0);
 }
 
-main().catch((err) => {
-  console.error('❌ Seed failed:', err);
-  process.exit(1);
-});
+module.exports = { seedUsers, generateRecords };
+
+if (require.main === module) {
+  main().catch((err) => {
+    console.error('❌ Seed failed:', err);
+    process.exit(1);
+  });
+}
