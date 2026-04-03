@@ -119,11 +119,27 @@ app.use(globalErrorHandler);
 
 // ── Start server ──────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+
+const server = app.listen(PORT, async () => {
   console.log(`\n🚀 Finance Management API running on http://localhost:${PORT}`);
+  
+  // ── Auto-Seed check ──
+  try {
+    const res = db.prepare('SELECT COUNT(*) as count FROM users').get();
+    if (res.count === 0) {
+      console.log('📦 Database is empty. Running auto-seed...');
+      const { seedUsers, generateRecords } = require('../seed');
+      const userIds = await seedUsers();
+      generateRecords(userIds);
+      console.log('✅ Auto-seed complete!');
+    }
+  } catch (e) {
+    console.error('⚠️ Auto-seed failed:', e.message);
+  }
+
   console.log(`   → Health:    http://localhost:${PORT}/health`);
   console.log(`   → API info:  http://localhost:${PORT}/api`);
   console.log(`   → Mode:      ${process.env.NODE_ENV || 'development'}\n`);
 });
 
-module.exports = app;
+module.exports = server;
