@@ -138,6 +138,7 @@ function navigate(page) {
 
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', (e) => {
+    if (!item.dataset.page) return;
     e.preventDefault();
     navigate(item.dataset.page);
   });
