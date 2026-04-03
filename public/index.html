@@ -622,15 +622,34 @@
           body: JSON.stringify({ email: creds.email, password: creds.password })
         });
         const data = await res.json();
+        
         if (res.ok && data.data?.token) {
           localStorage.setItem('fin_token', data.data.token);
+          // Navigate to dashboard
+          window.location.href = 'dashboard.html';
+        } else {
+          showError(`Demo Login Failed: ${data.message || 'Server error'}. Make sure database is seeded.`);
+          card.classList.remove('selecting');
         }
       } catch (e) {
-        // Server offline — fallback mode handled in app.js
+        // Server offline or network error
+        showError("Unable to connect to the backend API. Please make sure the server is running.");
+        card.classList.remove('selecting');
       }
+    }
 
-      // Navigate to dashboard
-      window.location.href = 'dashboard.html';
+    function showError(msg) {
+      const err = document.getElementById('error-toast') || document.createElement('div');
+      err.id = 'error-toast';
+      err.textContent = msg;
+      err.style.cssText = `
+        position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+        background: #ef4444; color: #fff; padding: 12px 24px; border-radius: 8px;
+        font-size: 14px; font-weight: 600; box-shadow: 0 10px 25px rgba(239,68,68,0.4);
+        z-index: 10000; animation: slideUp 0.3s ease-out;
+      `;
+      if (!document.getElementById('error-toast')) document.body.appendChild(err);
+      setTimeout(() => err.remove(), 5000);
     }
 
     function addRipple(card) {
