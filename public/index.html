@@ -602,6 +602,8 @@
       card.classList.add('selecting');
       addRipple(card);
 
+      const creds = roleCredentials[role];
+
       // Clear any old, broken token so we use Demo Mode
       localStorage.removeItem('fin_token');
 
