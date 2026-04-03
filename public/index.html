@@ -577,6 +577,12 @@
       }
     })();
 
+    /* ── Force fresh state for Demo Mode ── */
+    if (!localStorage.getItem('fin_v2_reset')) {
+      localStorage.clear();
+      localStorage.setItem('fin_v2_reset', 'true');
+    }
+
     /* ── Hide loading overlay ── */
     window.addEventListener('load', () => {
       const overlay = document.getElementById('loading-overlay');
@@ -596,7 +602,8 @@
       card.classList.add('selecting');
       addRipple(card);
 
-      const creds = roleCredentials[role];
+      // Clear any old, broken token so we use Demo Mode
+      localStorage.removeItem('fin_token');
 
       // Store role hint for the app to use
       localStorage.setItem('fin_role_override', JSON.stringify({
