@@ -44,10 +44,19 @@ app.get('/health', (req, res) => {
   if (req.accepts('html')) {
     return res.sendFile(path.join(__dirname, '..', 'public', 'health.html'));
   }
+
+  // Diagnostic: count users
+  let userCount = 0;
+  try {
+    const res = db.prepare('SELECT COUNT(*) as count FROM users').get();
+    userCount = res.count;
+  } catch (e) { /* ignore */ }
+
   res.status(200).json({
     status: 'ok',
     service: 'Finance Management API',
     version: '1.0.0',
+    userCount,
     timestamp: new Date().toISOString(),
   });
 });

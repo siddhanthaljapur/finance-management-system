@@ -616,6 +616,7 @@
 
       // Try to login via API
       try {
+        console.log(`Attempting demo login for: ${creds.email}`);
         const res = await fetch('/api/auth/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -623,17 +624,19 @@
         });
         const data = await res.json();
         
+        console.log('Login Response:', data);
+        
         if (res.ok && data.data?.token) {
           localStorage.setItem('fin_token', data.data.token);
           // Navigate to dashboard
           window.location.href = 'dashboard.html';
         } else {
-          showError(`Demo Login Failed: ${data.message || 'Server error'}. Make sure database is seeded.`);
+          showError(`Demo Login Failed: ${data.message || 'Server error'}. Check browser console.`);
           card.classList.remove('selecting');
         }
       } catch (e) {
-        // Server offline or network error
-        showError("Unable to connect to the backend API. Please make sure the server is running.");
+        console.error('Network Error:', e);
+        showError("Unable to connect to the backend API.");
         card.classList.remove('selecting');
       }
     }
