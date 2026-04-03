@@ -4,7 +4,13 @@ const Database = require('better-sqlite3');
 const path = require('path');
 require('dotenv').config();
 
-const DB_PATH = process.env.DB_PATH || './finance.db';
+// On Railway/Production, the root folder is read-only. We force a writable path if none is provided.
+const isProd = process.env.RAILWAY_ENVIRONMENT || process.env.PORT; 
+const DEFAULT_DB = isProd ? '/tmp/finance.db' : './finance.db';
+
+const DB_PATH = process.env.DB_PATH || DEFAULT_DB;
+
+console.log(`📡 Database System: Using path ${path.resolve(DB_PATH)}`);
 
 const db = new Database(path.resolve(DB_PATH));
 
