@@ -135,7 +135,32 @@ async function main() {
   process.exit(0);
 }
 
-module.exports = { seedUsers, generateRecords };
+function seedUsersSync() {
+  const insertUser = db.prepare(
+    `INSERT OR IGNORE INTO users (name, email, password_hash, role)
+     VALUES (?, ?, ?, ?)`
+  );
+  const userIds = {};
+  for (const u of USERS) {
+    const hash = bcrypt.hashSync(u.password, 10);
+    insertUser.run(u.name, u.email, hash, u.role);
+    const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(u.email);
+    userIds[u.role] = existing.id;
+  }
+  return userIds;
+}
+
+function seedSync() {
+  const res = db.prepare('SELECT COUNT(*) as count FROM users').get();
+  if (res.count === 0) {
+    console.log('📦 Sync-seeding database...');
+    const userIds = seedUsersSync();
+    generateRecords(userIds);
+    console.log('✅ Sync-seed complete!');
+  }
+}
+
+module.exports = { seedUsers, generateRecords, seedSync };
 
 if (require.main === module) {
   main().catch((err) => {

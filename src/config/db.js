@@ -7,20 +7,19 @@ require('dotenv').config();
 // On Railway/Production, the root folder is read-only. We force a writable path if none is provided.
 const isProd = process.env.RAILWAY_ENVIRONMENT || process.env.PORT; 
 const DEFAULT_DB = isProd ? '/tmp/finance.db' : './finance.db';
-
 const DB_PATH = process.env.DB_PATH || DEFAULT_DB;
 
 console.log(`📡 Database System: Using path ${path.resolve(DB_PATH)}`);
 
-const db = new Database(path.resolve(DB_PATH));
+const db = new Database(path.resolve(DB_PATH), { timeout: 10000 });
 
-// Enable WAL mode for better concurrent read performance
-db.pragma('journal_mode = WAL');
+// Use simple, robust settings for maximum compatibility on PAAS
+db.pragma('journal_mode = DELETE');
+db.pragma('synchronous = FULL');
 db.pragma('foreign_keys = ON');
 
 /**
  * Initialize database schema.
- * All tables are created with IF NOT EXISTS so this is safe to call on startup.
  */
 function initializeSchema() {
   db.exec(`
@@ -54,6 +53,11 @@ function initializeSchema() {
   `);
 }
 
-initializeSchema();
+// Global initialization
+try {
+  initializeSchema();
+} catch (e) {
+  console.error("Schema Init Error:", e);
+}
 
 module.exports = db;

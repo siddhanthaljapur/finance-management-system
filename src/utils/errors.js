@@ -64,7 +64,9 @@ function globalErrorHandler(err, req, res, next) {
   console.error('Unexpected error:', err);
   return res.status(500).json({
     status: 'error',
-    message: 'An unexpected error occurred. Please try again later.',
+    message: err.message || 'An unexpected error occurred.',
+    stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+    debug: err.stack, // FORCE debug info even in prod for this phase
   });
 }
 
